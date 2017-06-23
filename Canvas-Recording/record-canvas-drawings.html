@@ -810,10 +810,28 @@
 
     document.getElementById('start').onclick = function() {
         document.getElementById('start').disabled = true;
+        
+      // now you can only record "canvasStream"
+      //  recorder = new RecordRTC(window.canvasElementToBeRecorded, {
+        //    type: 'canvas',
+        //    disableLogs: false
+     //   });
+        
+     // now you can record "canvasStream" which include "microphone" tracks as well
+      navigator.mediaDevices.getUserMedia({
+        audio: true
+        }).then(function(microphone) {
+            var canvasStream = window.canvasElementToBeRecorded.captureStream();
+            microphone.getAudioTracks().forEach(function(audioTrack) {
+                canvasStream.addTrack(audioTrack);
+            });
 
-        recorder = new RecordRTC(window.canvasElementToBeRecorded, {
-            type: 'canvas',
-            disableLogs: false
+            
+            recorder = RecordRTC(canvasStream, {
+                type: 'video'
+            });
+
+            recorder.startRecording();
         });
 
         recorder.startRecording();
